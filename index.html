@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -45,58 +45,58 @@
       <span class="font-semibold tracking-tight">AdStat</span>
       <span class="badge b-prog">демо</span>
     </div>
-    <select id="companySelect" class="field" style="width:220px" aria-label="Активный клиент"></select>
+    <select id="companySelect" class="field" style="width:220px" aria-label="Активний клієнт"></select>
     <div class="flex-1"></div>
-    <button id="manageBtn" class="btn">Управление клиентами / CRM</button>
-    <button id="syncBtn" class="btn btn-primary"><span id="syncLbl">Синхронизировать</span></button>
+    <button id="manageBtn" class="btn">Керування клієнтами / CRM</button>
+    <button id="syncBtn" class="btn btn-primary"><span id="syncLbl">Синхронізувати</span></button>
   </div>
 </header>
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-  <div class="glass px-4 py-3 text-sm muted">Все цифры в этом демо вымышленные. Клиентов можно добавлять и удалять, период и клиента переключать, «Синхронизировать» подгружает новые тестовые заявки.</div>
+  <div class="glass px-4 py-3 text-sm muted">Усі цифри в цьому демо вигадані. Клієнтів можна додавати й видаляти, період і клієнта перемикати, «Синхронізувати» підвантажує нові тестові заявки.</div>
   <div class="flex flex-wrap items-end justify-between gap-3">
     <div><h1 id="title" class="text-2xl font-semibold tracking-tight"></h1><p id="subtitle" class="muted text-sm mt-1"></p></div>
-    <div class="seg" id="periods" role="group" aria-label="Период">
-      <button data-p="today" aria-pressed="false">Сегодня</button><button data-p="week" aria-pressed="false">Неделя</button>
-      <button data-p="month" aria-pressed="true">Месяц</button><button data-p="all" aria-pressed="false">Все время</button>
+    <div class="seg" id="periods" role="group" aria-label="Період">
+      <button data-p="today" aria-pressed="false">Сьогодні</button><button data-p="week" aria-pressed="false">Тиждень</button>
+      <button data-p="month" aria-pressed="true">Місяць</button><button data-p="all" aria-pressed="false">Весь час</button>
     </div>
   </div>
-  <div id="empty" class="glass p-10 text-center hidden"><h2 class="text-lg font-semibold">Добавьте первого клиента</h2><p class="muted text-sm mt-1 mb-5">Здесь появятся лиды, источники и менеджеры.</p><button class="btn btn-primary" id="emptyAdd">Добавить клиента</button></div>
+  <div id="empty" class="glass p-10 text-center hidden"><h2 class="text-lg font-semibold">Додайте першого клієнта</h2><p class="muted text-sm mt-1 mb-5">Тут з’являться ліди, джерела та менеджери.</p><button class="btn btn-primary" id="emptyAdd">Додати клієнта</button></div>
   <div id="dash" class="space-y-6">
     <section id="kpis" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></section>
     <section class="grid lg:grid-cols-5 gap-4">
-      <div class="glass p-5 lg:col-span-2"><h3 class="font-semibold">Откуда приходят люди</h3><p class="muted text-sm mb-4">Лиды по источникам трафика</p><div class="relative h-72"><canvas id="srcChart"></canvas></div></div>
+      <div class="glass p-5 lg:col-span-2"><h3 class="font-semibold">Звідки приходять люди</h3><p class="muted text-sm mb-4">Ліди за джерелами трафіку</p><div class="relative h-72"><canvas id="srcChart"></canvas></div></div>
       <div class="glass p-5 lg:col-span-3">
-        <div class="flex items-start justify-between gap-3 mb-4"><div><h3 class="font-semibold">Кто чаще закрывается</h3><p class="muted text-sm">Успешные сделки</p></div>
-          <div class="seg" id="barMode" role="group" aria-label="Разрез"><button data-m="managers" aria-pressed="true">Менеджеры</button><button data-m="sources" aria-pressed="false">Источники</button></div></div>
+        <div class="flex items-start justify-between gap-3 mb-4"><div><h3 class="font-semibold">Хто частіше закриває</h3><p class="muted text-sm">Успішні угоди</p></div>
+          <div class="seg" id="barMode" role="group" aria-label="Розріз"><button data-m="managers" aria-pressed="true">Менеджери</button><button data-m="sources" aria-pressed="false">Джерела</button></div></div>
         <div class="relative h-72"><canvas id="barChart"></canvas></div>
       </div>
     </section>
-    <section class="glass overflow-hidden"><div class="px-5 pt-5 pb-3"><h3 class="font-semibold">Последние лиды</h3></div>
-      <div class="overflow-x-auto"><table><thead><tr><th>Дата</th><th>Заказ</th><th>Источник</th><th>Кампания</th><th>Менеджер</th><th>Статус</th><th style="text-align:right">Сумма</th></tr></thead><tbody id="leadsBody"></tbody></table></div></section>
+    <section class="glass overflow-hidden"><div class="px-5 pt-5 pb-3"><h3 class="font-semibold">Останні ліди</h3></div>
+      <div class="overflow-x-auto"><table><thead><tr><th>Дата</th><th>Замовлення</th><th>Джерело</th><th>Кампанія</th><th>Менеджер</th><th>Статус</th><th style="text-align:right">Сума</th></tr></thead><tbody id="leadsBody"></tbody></table></div></section>
   </div>
 </main>
 
 <dialog id="modal" class="w-full"><div class="glass mx-auto my-8 w-[min(640px,calc(100vw-24px))] p-6" style="background:rgba(20,21,30,.95)">
-  <div class="flex items-center justify-between mb-5"><h2 class="text-lg font-semibold">Клиенты и CRM</h2><button class="btn" style="height:32px" id="closeBtn">Закрыть</button></div>
+  <div class="flex items-center justify-between mb-5"><h2 class="text-lg font-semibold">Клієнти та CRM</h2><button class="btn" style="height:32px" id="closeBtn">Закрити</button></div>
   <div id="companyList" class="space-y-2 mb-6"></div>
-  <div class="space-y-3 pt-5 border-t" style="border-color:var(--line)"><h3 class="font-semibold text-sm">Новый клиент</h3>
-    <input id="fName" class="field" placeholder="Название компании">
+  <div class="space-y-3 pt-5 border-t" style="border-color:var(--line)"><h3 class="font-semibold text-sm">Новий клієнт</h3>
+    <input id="fName" class="field" placeholder="Назва компанії">
     <select id="fType" class="field" aria-label="CRM"><option value="SalesDrive">SalesDrive</option><option value="KeyCRM">KeyCRM</option><option value="AmoCRM">AmoCRM</option></select>
-    <input id="fKey" class="field" placeholder="API-ключ (в демо можно любой)">
+    <input id="fKey" class="field" placeholder="API-ключ (у демо можна будь-який)">
     <p id="formErr" class="text-sm hidden" style="color:var(--neg)"></p>
-    <button class="btn btn-primary" id="addBtn">Добавить клиента</button></div>
+    <button class="btn btn-primary" id="addBtn">Додати клієнта</button></div>
 </div></dialog>
 <div id="toast" class="glass px-4 py-2.5 text-sm opacity-0 pointer-events-none"></div>
 
 <script>
 const $=s=>document.querySelector(s), modal=$('#modal');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const money=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n||0)+' ₴', num=n=>new Intl.NumberFormat('ru-RU').format(n||0);
-const WON='успешно закрыт',LOST='отменен',PROG='в работе',NEW='новый', DAY=864e5, PALETTE=['#7c8cff','#3fd6a5','#f5b95f','#ff7a90','#5ec8f2','#b388ff'];
+const money=n=>new Intl.NumberFormat('uk-UA',{maximumFractionDigits:0}).format(n||0)+' ₴', num=n=>new Intl.NumberFormat('uk-UA').format(n||0);
+const WON='успішно закрито',LOST='скасовано',PROG='в роботі',NEW='новий', DAY=864e5, PALETTE=['#7c8cff','#3fd6a5','#f5b95f','#ff7a90','#5ec8f2','#b388ff'];
 const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
 
-/* ---------- вымышленные профили клиентов: источник [доля, шанс закрытия] ---------- */
+/* ---------- вигадані профілі клієнтів: джерело [частка, шанс закриття] ---------- */
 const PROFILES=[
  {name:'Smile Dental',crm:'SalesDrive',seed:11,avg:3400,perDay:6,growth:.5,mgr:['Олена К.','Ірина М.','Богдан П.'],
   src:[['facebook',.32,.17],['instagram',.27,.14],['google',.23,.33],['tiktok',.11,.06],['organic',.07,.30]],camp:['Імплантація_лід','Відбілювання_акція','Консультація_0грн','Ретаргет_30д']},
@@ -124,56 +124,56 @@ function genLeads(p,startId){
   return out;
 }
 
-/* ---------- состояние ---------- */
+/* ---------- стан ---------- */
 const state={db:PROFILES.map((p,i)=>({id:i+1,name:p.name,crm:p.crm,profile:p,leads:genLeads(p,1000*(i+1))})),companyId:1,period:'month',mode:'managers',charts:{},nextId:4};
 const cur=()=>state.db.find(c=>c.id===state.companyId);
 let toastT;function toast(m,bad){const t=$('#toast');t.textContent=m;t.style.color=bad?'var(--neg)':'var(--text)';t.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity=0,3000)}
 
-/* ---------- аналитика (та же логика, что на бэкенде) ---------- */
+/* ---------- аналітика (та сама логіка, що на бекенді) ---------- */
 function range(p){const now=Date.now(),L={today:1,week:7,month:30}[p];if(!L)return null;const sod=new Date();sod.setHours(0,0,0,0);const from=p==='today'?+sod:now-L*DAY;return{from,to:now+1000,pf:from-L*DAY,pt:from}}
 const inR=(l,a,b)=>(a==null||l.created_at>=a)&&(b==null||l.created_at<b);
 function kpi(ls){const won=ls.filter(l=>l.status===WON);return{leads:ls.length,won:won.length,revenue:won.reduce((s,l)=>s+l.amount,0),cr:ls.length?+(won.length/ls.length*100).toFixed(1):0}}
 function group(ls,key,empty){const m=new Map();ls.forEach(l=>{const k=l[key]||empty,g=m.get(k)||{label:k,leads:0,won:0};g.leads++;if(l.status===WON)g.won++;m.set(k,g)});return[...m.values()].map(g=>({...g,cr:+(g.won/g.leads*100).toFixed(1)}))}
 function analytics(){const all=cur().leads,r=range(state.period);
   const ls=r?all.filter(l=>inR(l,r.from,r.to)):all, prev=r?kpi(all.filter(l=>inR(l,r.pf,r.pt))):null;
-  return{kpi:kpi(ls),prev,sources:group(ls,'source','не указан').sort((a,b)=>b.leads-a.leads),managers:group(ls,'manager','не назначен').sort((a,b)=>b.won-a.won),recent:[...ls].sort((a,b)=>b.created_at-a.created_at).slice(0,20)}}
+  return{kpi:kpi(ls),prev,sources:group(ls,'source','не вказано').sort((a,b)=>b.leads-a.leads),managers:group(ls,'manager','не призначено').sort((a,b)=>b.won-a.won),recent:[...ls].sort((a,b)=>b.created_at-a.created_at).slice(0,20)}}
 
-function delta(c,p,pp){if(p==null)return'';const d=pp?+(c-p).toFixed(1):(p===0?(c>0?100:0):Math.round((c-p)/p*100));const cl=d>0?'up':d<0?'down':'flat';return`<span class="delta ${cl}">${d>0?'↑':d<0?'↓':''} ${Math.abs(d)}${pp?' п.п.':'%'}</span>`}
+function delta(c,p,pp){if(p==null)return'';const d=pp?+(c-p).toFixed(1):(p===0?(c>0?100:0):Math.round((c-p)/p*100));const cl=d>0?'up':d<0?'down':'flat';return`<span class="delta ${cl}">${d>0?'↑':d<0?'↓':''} ${Math.abs(d)}${pp?' в.п.':'%'}</span>`}
 
 function render(){
   const empty=!state.db.length;$('#empty').classList.toggle('hidden',!empty);$('#dash').classList.toggle('hidden',empty);
-  $('#companySelect').innerHTML=state.db.map(c=>`<option value="${c.id}" ${c.id===state.companyId?'selected':''}>${esc(c.name)}</option>`).join('')||'<option>Нет клиентов</option>';
+  $('#companySelect').innerHTML=state.db.map(c=>`<option value="${c.id}" ${c.id===state.companyId?'selected':''}>${esc(c.name)}</option>`).join('')||'<option>Немає клієнтів</option>';
   $('#syncBtn').disabled=empty;renderList();
-  if(empty){$('#title').textContent='Аналитика';$('#subtitle').textContent='';return}
+  if(empty){$('#title').textContent='Аналітика';$('#subtitle').textContent='';return}
   const c=cur(),a=analytics(),{kpi:k,prev:p}=a;$('#title').textContent=c.name;$('#subtitle').textContent=c.crm;
-  const cards=[['Всего лидов',num(k.leads),delta(k.leads,p?.leads)],['Выручка',money(k.revenue),delta(k.revenue,p?.revenue)],['Успешные сделки',num(k.won),delta(k.won,p?.won)],['Конверсия',k.cr+'%',p?delta(k.cr,p.cr,1):'']];
-  $('#kpis').innerHTML=cards.map(([l,v,d])=>`<div class="glass p-5"><div class="muted text-sm">${l}</div><div class="text-3xl font-semibold tracking-tight mt-2">${v}</div><div class="mt-3 h-6 flex items-center gap-2">${d}${d?'<span class="muted text-xs">к прошлому периоду</span>':''}</div></div>`).join('');
+  const cards=[['Усього лідів',num(k.leads),delta(k.leads,p?.leads)],['Виручка',money(k.revenue),delta(k.revenue,p?.revenue)],['Успішні угоди',num(k.won),delta(k.won,p?.won)],['Конверсія',k.cr+'%',p?delta(k.cr,p.cr,1):'']];
+  $('#kpis').innerHTML=cards.map(([l,v,d])=>`<div class="glass p-5"><div class="muted text-sm">${l}</div><div class="text-3xl font-semibold tracking-tight mt-2">${v}</div><div class="mt-3 h-6 flex items-center gap-2">${d}${d?'<span class="muted text-xs">до минулого періоду</span>':''}</div></div>`).join('');
   Chart.defaults.color='#8b8fa0';Chart.defaults.font.family='Onest,system-ui,sans-serif';
   mount('srcChart',{type:'doughnut',data:{labels:a.sources.map(x=>x.label),datasets:[{data:a.sources.map(x=>x.leads),backgroundColor:a.sources.map((_,i)=>PALETTE[i%6]),borderColor:'#14151d',borderWidth:3,hoverOffset:6}]},
     options:{maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:14}},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw} (${(c.raw/c.dataset.data.reduce((x,y)=>x+y,0)*100).toFixed(0)}%)`}}}}});
   const rows=a[state.mode].filter(x=>x.won>0).slice(0,10);
-  mount('barChart',{type:'bar',data:{labels:rows.map(x=>x.label),datasets:[{label:'Успешные сделки',data:rows.map(x=>x.won),backgroundColor:'#7c8cff',hoverBackgroundColor:'#95a2ff',borderRadius:8,maxBarThickness:44}]},
-    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{afterLabel:c=>`Лидов: ${rows[c.dataIndex].leads} · конверсия ${rows[c.dataIndex].cr}%`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(255,255,255,.06)'},border:{display:false}}}}});
+  mount('barChart',{type:'bar',data:{labels:rows.map(x=>x.label),datasets:[{label:'Успішні угоди',data:rows.map(x=>x.won),backgroundColor:'#7c8cff',hoverBackgroundColor:'#95a2ff',borderRadius:8,maxBarThickness:44}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{afterLabel:c=>`Лідів: ${rows[c.dataIndex].leads} · конверсія ${rows[c.dataIndex].cr}%`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(255,255,255,.06)'},border:{display:false}}}}});
   const cls={[WON]:'b-won',[LOST]:'b-lost',[PROG]:'b-prog',[NEW]:'b-new'};
-  $('#leadsBody').innerHTML=a.recent.length?a.recent.map(r=>`<tr><td class="muted">${r.created_at.toLocaleString('ru-RU',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td><td>#${esc(r.order_id)}</td><td>${esc(r.source)}</td><td>${esc(r.campaign)}</td><td>${esc(r.manager)}</td><td><span class="badge ${cls[r.status]}">${esc(r.status)}</span></td><td style="text-align:right">${r.amount?money(r.amount):'<span class="muted">—</span>'}</td></tr>`).join(''):'<tr><td colspan="7" class="muted" style="text-align:center;padding:32px">За этот период лидов нет</td></tr>';
+  $('#leadsBody').innerHTML=a.recent.length?a.recent.map(r=>`<tr><td class="muted">${r.created_at.toLocaleString('uk-UA',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td><td>#${esc(r.order_id)}</td><td>${esc(r.source)}</td><td>${esc(r.campaign)}</td><td>${esc(r.manager)}</td><td><span class="badge ${cls[r.status]}">${esc(r.status)}</span></td><td style="text-align:right">${r.amount?money(r.amount):'<span class="muted">—</span>'}</td></tr>`).join(''):'<tr><td colspan="7" class="muted" style="text-align:center;padding:32px">За цей період лідів немає</td></tr>';
 }
 function mount(id,cfg){state.charts[id]?.destroy();state.charts[id]=new Chart($('#'+id),cfg)}
 
-/* ---------- действия ---------- */
+/* ---------- дії ---------- */
 function bindSeg(sel,key){$(sel).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$(sel).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));state[key]=b.dataset.p||b.dataset.m;render()})}
 bindSeg('#periods','period');bindSeg('#barMode','mode');
 $('#companySelect').onchange=e=>{state.companyId=+e.target.value;render()};
-$('#syncBtn').onclick=()=>{const b=$('#syncBtn'),l=$('#syncLbl');b.disabled=true;l.innerHTML='<span class="spin"></span> Синхронизация';
+$('#syncBtn').onclick=()=>{const b=$('#syncBtn'),l=$('#syncLbl');b.disabled=true;l.innerHTML='<span class="spin"></span> Синхронізація';
   setTimeout(()=>{const c=cur(),p=c.profile,r=rng(Date.now()),n=3+Math.floor(r()*4),last=Math.max(...c.leads.map(x=>+x.order_id));
     for(let i=0;i<n;i++){const s=p.src[Math.floor(r()*p.src.length)];c.leads.push({order_id:String(last+i+1),source:s[0],campaign:p.camp[Math.floor(r()*p.camp.length)],manager:p.mgr[Math.floor(r()*p.mgr.length)],status:NEW,amount:0,created_at:new Date()})}
-    b.disabled=false;l.textContent='Синхронизировать';toast(`Загружено новых лидов: ${n}`);render()},1100)};
+    b.disabled=false;l.textContent='Синхронізувати';toast(`Завантажено нових лідів: ${n}`);render()},1100)};
 const openM=()=>{$('#formErr').classList.add('hidden');modal.showModal()};
 $('#manageBtn').onclick=openM;$('#emptyAdd').onclick=openM;$('#closeBtn').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});
-function renderList(){$('#companyList').innerHTML=state.db.length?state.db.map(c=>`<div class="flex items-center justify-between gap-3 p-3 rounded-xl" style="background:rgba(255,255,255,.04);border:1px solid var(--line)"><div><div class="font-medium text-sm">${esc(c.name)}</div><div class="muted text-xs mt-0.5">${esc(c.crm)} · ${num(c.leads.length)} лидов</div></div><button class="btn" style="height:30px;color:var(--neg)" data-del="${c.id}">Удалить</button></div>`).join(''):'<p class="muted text-sm">Пока нет ни одного клиента.</p>'}
-$('#companyList').addEventListener('click',e=>{const id=+e.target.dataset.del;if(!id)return;state.db=state.db.filter(c=>c.id!==id);if(state.companyId===id)state.companyId=state.db[0]?.id||null;toast('Клиент удалён');render()});
-$('#addBtn').onclick=()=>{const name=$('#fName').value.trim();if(!name){const e=$('#formErr');e.textContent='Укажите название компании';e.classList.remove('hidden');return}
+function renderList(){$('#companyList').innerHTML=state.db.length?state.db.map(c=>`<div class="flex items-center justify-between gap-3 p-3 rounded-xl" style="background:rgba(255,255,255,.04);border:1px solid var(--line)"><div><div class="font-medium text-sm">${esc(c.name)}</div><div class="muted text-xs mt-0.5">${esc(c.crm)} · ${num(c.leads.length)} лідів</div></div><button class="btn" style="height:30px;color:var(--neg)" data-del="${c.id}">Видалити</button></div>`).join(''):'<p class="muted text-sm">Поки немає жодного клієнта.</p>'}
+$('#companyList').addEventListener('click',e=>{const id=+e.target.dataset.del;if(!id)return;state.db=state.db.filter(c=>c.id!==id);if(state.companyId===id)state.companyId=state.db[0]?.id||null;toast('Клієнта видалено');render()});
+$('#addBtn').onclick=()=>{const name=$('#fName').value.trim();if(!name){const e=$('#formErr');e.textContent='Вкажіть назву компанії';e.classList.remove('hidden');return}
   const p={...PROFILES[state.nextId%3],name,crm:$('#fType').value,seed:state.nextId*17+5}, c={id:state.nextId++,name,crm:p.crm,profile:p,leads:genLeads(p,5000+state.nextId*1000)};
-  state.db.push(c);state.companyId=c.id;$('#fName').value='';$('#fKey').value='';toast('Клиент добавлен, тестовые лиды загружены');render()};
+  state.db.push(c);state.companyId=c.id;$('#fName').value='';$('#fKey').value='';toast('Клієнта додано, тестові ліди завантажено');render()};
 render();
 </script>
 </body>
