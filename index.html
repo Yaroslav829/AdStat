@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdAnalytics | Executive Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d16',
+                        cardBg: '#111827',
+                        borderCol: '#1f2937',
+                        accent: '#6366f1'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-darkBg text-gray-100 font-sans antialiased min-h-screen p-4 sm:p-6 relative selection:bg-indigo-500 selection:text-white">
+
+    <div class="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        
+        <!-- Шапка -->
+        <header class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center bg-cardBg border border-borderCol p-4 rounded-2xl shadow-xl gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-500/30 flex-shrink-0">📊</div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg tracking-wide">AdAnalytics</h1>
+                    <p class="text-xs text-gray-400">Мульти-CRM дашборд для таргетолога</p>
+                </div>
+            </div>
+
+            <!-- Селектор клієнта та керування -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                <div class="relative w-full sm:w-auto">
+                    <select class="w-full sm:w-auto bg-darkBg border border-borderCol text-sm rounded-xl px-4 py-2.5 outline-none focus:border-indigo-500 transition cursor-pointer appearance-none pr-10">
+                        <option>🟢 Інтернет-магазин одягу (SalesDrive)</option>
+                        <option>🔵 Автозапчасти США (AmoCRM)</option>
+                        <option>🟣 Б’юті-салон (KeyCRM)</option>
+                    </select>
+                    <div class="absolute right-3 top-3.5 text-xs text-gray-400 pointer-events-none">▼</div>
+                </div>
+
+                <!-- Кнопка адмінки -->
+                <button onclick="toggleModal(true)" class="bg-borderCol hover:bg-gray-800 text-sm font-medium px-4 py-2.5 rounded-xl transition border border-gray-700 flex items-center justify-center gap-1.5 cursor-pointer">
+                    ⚙️ Клієнти та CRM
+                </button>
+
+                <!-- Кнопка синхронізації -->
+                <button onclick="simulateSync()" id="syncBtn" class="bg-indigo-600 hover:bg-indigo-500 text-sm font-medium px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
+                    <span id="syncIcon">🔄</span> Синхронізувати
+                </button>
+            </div>
+        </header>
+
+        <!-- Фільтри періодів -->
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center bg-cardBg border border-borderCol px-4 sm:px-6 py-3 rounded-2xl text-sm gap-3">
+            <div class="flex grid grid-cols-3 sm:flex flex-wrap gap-1.5">
+                <button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium shadow-md shadow-indigo-600/20 text-center">Сьогодні</button>
+                <button class="px-3 py-1.5 rounded-lg hover:bg-borderCol text-gray-400 transition text-center">Вчора</button>
+                <button class="px-3 py-1.5 rounded-lg hover:bg-borderCol text-gray-400 transition text-center">Тиждень</button>
+                <button class="px-3 py-1.5 rounded-lg hover:bg-borderCol text-gray-400 transition text-center">Місяць</button>
+                <button class="px-3 py-1.5 rounded-lg hover:bg-borderCol text-gray-400 transition text-center col-span-2 sm:col-span-1">Рік</button>
+            </div>
+            <div class="text-xs text-gray-400 flex items-center justify-center sm:justify-end gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Оновлено: <span id="lastSyncTime">Щойно</span>
+            </div>
+        </div>
+
+        <!-- KPI Картки -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-cardBg border border-borderCol p-4 sm:p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-indigo-500/50 transition">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl group-hover:bg-indigo-500/10 transition"></div>
+                <p class="text-xs text-gray-400 uppercase tracking-wider">Всього лідів</p>
+                <div class="flex items-baseline justify-between mt-2">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">1,284</h3>
+                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">+14.2%</span>
+                </div>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol p-4 sm:p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-indigo-500/50 transition">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition"></div>
+                <p class="text-xs text-gray-400 uppercase tracking-wider">Виручка</p>
+                <div class="flex items-baseline justify-between mt-2">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">$42,350</h3>
+                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">+8.5%</span>
+                </div>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol p-4 sm:p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-indigo-500/50 transition">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition"></div>
+                <p class="text-xs text-gray-400 uppercase tracking-wider">Успішні угоди</p>
+                <div class="flex items-baseline justify-between mt-2">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">342</h3>
+                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">+12.1%</span>
+                </div>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol p-4 sm:p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-indigo-500/50 transition">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition"></div>
+                <p class="text-xs text-gray-400 uppercase tracking-wider">Конверсія (CR)</p>
+                <div class="flex items-baseline justify-between mt-2">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">26.6%</h3>
+                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">+3.1%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Секція графіків -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Звідки приходять -->
+            <div class="bg-cardBg border border-borderCol p-4 sm:p-6 rounded-2xl shadow-lg lg:col-span-1 flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-sm">🍩 Джерела трафіку</h3>
+                    <span class="text-xs text-gray-400">Звідки ліди</span>
+                </div>
+                <div class="relative h-60 sm:h-64 flex items-center justify-center">
+                    <canvas id="sourcesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Хто закриває -->
+            <div class="bg-cardBg border border-borderCol p-4 sm:p-6 rounded-2xl shadow-lg lg:col-span-2 flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-sm">📊 Успішні угоди за менеджерами</h3>
+                    <span class="text-xs text-gray-400">Ефективність команди</span>
+                </div>
+                <div class="relative h-60 sm:h-64">
+                    <canvas id="managersChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Таблиця останніх лідів -->
+        <div class="bg-cardBg border border-borderCol p-4 sm:p-6 rounded-2xl shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-sm">📋 Останні ліди та замовлення</h3>
+                <span class="text-xs text-indigo-400 cursor-pointer hover:underline">Показати всі →</span>
+            </div>
+            <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <table class="w-full text-left text-sm text-gray-300 min-w-[600px]">
+                    <thead class="border-b border-borderCol text-gray-400 text-xs uppercase">
+                        <tr>
+                            <th class="py-3 px-4">ID</th>
+                            <th class="py-3 px-4">Джерело</th>
+                            <th class="py-3 px-4">Менеджер</th>
+                            <th class="py-3 px-4">Статус</th>
+                            <th class="py-3 px-4">Сума</th>
+                            <th class="py-3 px-4">Дата / Час</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-borderCol/50">
+                        <tr class="hover:bg-gray-800/40 transition">
+                            <td class="py-3 px-4 font-medium text-white">#1042</td>
+                            <td class="py-3 px-4 text-indigo-300">google / cpc</td>
+                            <td class="py-3 px-4">Денис</td>
+                            <td class="py-3 px-4"><span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full text-xs font-medium">Успішно закрито</span></td>
+                            <td class="py-3 px-4 font-semibold text-white">$350.00</td>
+                            <td class="py-3 px-4 text-gray-400">Сьогодні, 18:40</td>
+                        </tr>
+                        <tr class="hover:bg-gray-800/40 transition">
+                            <td class="py-3 px-4 font-medium text-white">#1041</td>
+                            <td class="py-3 px-4 text-blue-300">fb / ads</td>
+                            <td class="py-3 px-4">Остап</td>
+                            <td class="py-3 px-4"><span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full text-xs font-medium">В роботі</span></td>
+                            <td class="py-3 px-4 font-semibold text-white">$120.00</td>
+                            <td class="py-3 px-4 text-gray-400">Сьогодні, 17:15</td>
+                        </tr>
+                        <tr class="hover:bg-gray-800/40 transition">
+                            <td class="py-3 px-4 font-medium text-white">#1040</td>
+                            <td class="py-3 px-4 text-pink-300">insta / story</td>
+                            <td class="py-3 px-4">Денис</td>
+                            <td class="py-3 px-4"><span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-full text-xs font-medium">Скасовано</span></td>
+                            <td class="py-3 px-4 font-semibold text-white">$0.00</td>
+                            <td class="py-3 px-4 text-gray-400">Сьогодні, 16:02</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Модальне вікно керування клієнтами (No-Code Admin Modal) -->
+    <div id="clientsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-cardBg border border-borderCol w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Шапка модалки -->
+            <div class="flex justify-between items-center px-4 sm:px-6 py-4 border-b border-borderCol">
+                <h3 class="font-bold text-base flex items-center gap-2">⚙️ Керування клієнтами та CRM</h3>
+                <button onclick="toggleModal(false)" class="text-gray-400 hover:text-white text-lg font-bold w-8 h-8 rounded-lg flex items-center justify-center hover:bg-borderCol transition cursor-pointer">✕</button>
+            </div>
+            
+            <!-- Тіло модалки -->
+            <div class="p-4 sm:p-6 space-y-6 overflow-y-auto">
+                <!-- Форма додавання нового клієнта -->
+                <div class="bg-darkBg p-4 rounded-xl border border-borderCol space-y-4">
+                    <h4 class="text-sm font-semibold text-indigo-400">➕ Підключити нового клієнта</h4>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Назва клієнта / бренду</label>
+                        <input type="text" placeholder="Наприклад: Інтернет-магазин косметики" class="w-full bg-cardBg border border-borderCol rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 text-white">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Тип CRM / Джерела</label>
+                            <select class="w-full bg-cardBg border border-borderCol rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 text-white">
+                                <option value="salesdrive">SalesDrive</option>
+                                <option value="amocrm">AmoCRM</option>
+                                <option value="keycrm">KeyCRM</option>
+                                <option value="googlesheets">Google Таблиця</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">API Ключ / Токен</label>
+                            <input type="password" placeholder="••••••••••••••••" class="w-full bg-cardBg border border-borderCol rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 text-white">
+                        </div>
+                    </div>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-sm font-medium py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20 cursor-pointer">Зберегти та підключити</button>
+                </div>
+
+                <!-- Список існуючих клієнтів -->
+                <div>
+                    <h4 class="text-sm font-semibold mb-3 text-gray-300">Активні клієнти</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center bg-darkBg px-4 py-3 rounded-xl border border-borderCol">
+                            <div>
+                                <p class="text-sm font-medium text-white">Інтернет-магазин одягу</p>
+                                <p class="text-xs text-gray-400">CRM: <span class="text-indigo-400">SalesDrive</span></p>
+                            </div>
+                            <button class="text-rose-400 hover:text-rose-300 text-xs font-semibold px-3 py-1.5 bg-rose-500/10 rounded-lg transition cursor-pointer">Видалити</button>
+                        </div>
+                        <div class="flex justify-between items-center bg-darkBg px-4 py-3 rounded-xl border border-borderCol">
+                            <div>
+                                <p class="text-sm font-medium text-white">Автозапчасти США</p>
+                                <p class="text-xs text-gray-400">CRM: <span class="text-blue-400">AmoCRM</span></p>
+                            </div>
+                            <button class="text-rose-400 hover:text-rose-300 text-xs font-semibold px-3 py-1.5 bg-rose-500/10 rounded-lg transition cursor-pointer">Видалити</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипти графіків та анімацій -->
+    <script>
+        // Керування модальним вікном
+        function toggleModal(show) {
+            const modal = document.getElementById('clientsModal');
+            if (show) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Імітація синхронізації
+        function simulateSync() {
+            const btn = document.getElementById('syncBtn');
+            const icon = document.getElementById('syncIcon');
+            const timeSpan = document.getElementById('lastSyncTime');
+            
+            icon.style.display = 'inline-block';
+            icon.style.transition = 'transform 1s';
+            icon.style.transform = 'rotate(360deg)';
+            btn.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                icon.style.transform = 'rotate(0deg)';
+                btn.style.opacity = '1';
+                timeSpan.innerText = 'Щойно';
+            }, 1000);
+        }
+
+        // Графік джерел (Doughnut)
+        const ctx1 = document.getElementById('sourcesChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Google CPC', 'Facebook Ads', 'Instagram', 'Direct'],
+                datasets: [{
+                    data: [45, 30, 15, 10],
+                    backgroundColor: ['#6366f1', '#3b82f6', '#ec4899', '#64748b'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { position: 'bottom', labels: { color: '#9ca3af', boxWidth: 12, font: { size: 11 } } } 
+                }
+            }
+        });
+
+        // Графік менеджерів (Bar)
+        const ctx2 = document.getElementById('managersChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Денис', 'Остап', 'Іван', 'Марина'],
+                datasets: [{
+                    label: 'Закриті угоди',
+                    data: [142, 108, 68, 24],
+                    backgroundColor: '#6366f1',
+                    borderRadius: 8,
+                    hoverBackgroundColor: '#818cf8'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#9ca3af', font: { size: 11 } }, grid: { display: false } },
+                    y: { ticks: { color: '#9ca3af', font: { size: 11 } }, grid: { color: '#1f2937' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
