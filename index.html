@@ -1,333 +1,180 @@
 <!DOCTYPE html>
-<html lang="uk" class="dark">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdAnalytics | Executive Dashboard</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#090d16',
-                        cardBg: '#111827',
-                        borderCol: '#1f2937',
-                        accent: '#6366f1'
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AdStat — демо</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Onest','system-ui','sans-serif']}}}}</script>
+<style>
+  :root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0b0c12;--text:#e9eaf0;--muted:#8b8fa0;--line:rgba(255,255,255,.08);--glass:rgba(255,255,255,.04);--accent:#7c8cff;--pos:#3fd6a5;--neg:#ff6b7a}
+  html,body{background:var(--bg);color:var(--text);font-feature-settings:"tnum"}
+  body{min-height:100vh;background-image:radial-gradient(900px 500px at 12% -10%,rgba(124,140,255,.16),transparent 60%),radial-gradient(700px 420px at 95% 0%,rgba(63,214,165,.08),transparent 60%);background-attachment:fixed}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:rgba(11,12,18,.85);z-index:40}
+  .glass{background:var(--glass);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 10px 30px -12px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04)}
+  .muted{color:var(--muted)}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:14px;font-weight:500;transition:background .15s;cursor:pointer;color:var(--text)}
+  .btn:hover{background:rgba(255,255,255,.09)} .btn-primary{background:var(--accent);border-color:transparent;color:#0b0c12;font-weight:600} .btn-primary:hover{background:#95a2ff} .btn:disabled{opacity:.6;cursor:wait}
+  .field{width:100%;height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-size:14px;outline:none}
+  .field:focus,.btn:focus-visible,.seg button:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,140,255,.25)}
+  select.field option{background:#14151d}
+  .seg{display:inline-flex;padding:3px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+  .seg button{height:32px;padding:0 14px;border-radius:9px;font-size:13px;font-weight:500;color:var(--muted);transition:all .15s}
+  .seg button[aria-pressed=true]{background:rgba(255,255,255,.1);color:var(--text)}
+  .delta{display:inline-flex;gap:2px;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
+  .up{background:rgba(63,214,165,.12);color:var(--pos)} .down{background:rgba(255,107,122,.12);color:var(--neg)} .flat{background:rgba(255,255,255,.06);color:var(--muted)}
+  .badge{padding:2px 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap}
+  .b-won{background:rgba(63,214,165,.12);color:var(--pos)} .b-lost{background:rgba(255,107,122,.12);color:var(--neg)} .b-prog{background:rgba(124,140,255,.14);color:#aab4ff} .b-new{background:rgba(255,255,255,.07);color:var(--muted)}
+  table{border-collapse:collapse;width:100%} th{font-weight:500;color:var(--muted);font-size:13px;text-align:left;padding:10px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:12px 16px;font-size:14px;border-bottom:1px solid rgba(255,255,255,.05);white-space:nowrap} tbody tr:last-child td{border-bottom:0}
+  .spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#0b0c12;border-radius:50%;animation:s .7s linear infinite} @keyframes s{to{transform:rotate(360deg)}}
+  dialog{background:transparent;border:0;padding:0;max-width:none;color:var(--text)} dialog::backdrop{background:rgba(5,6,10,.65);backdrop-filter:blur(6px)}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;transition:opacity .2s}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
-<body class="bg-darkBg text-gray-100 font-sans antialiased min-h-screen p-4 sm:p-6 relative selection:bg-indigo-500 selection:text-white">
-
-    <div class="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-        
-        <!-- Шапка -->
-        <header class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center bg-cardBg border border-borderCol p-4 rounded-2xl shadow-xl gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-500/30 flex-shrink-0">📊</div>
-                <div>
-                    <h1 class="font-bold text-base sm:text-lg tracking-wide">AdAnalytics</h1>
-                    <p class="text-xs text-gray-400">Мульти-CRM дашборд для таргетолога</p>
-                </div>
-            </div>
-
-            <!-- Селектор клієнта та керування -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-                <div class="relative w-full sm:w-auto">
-                    <select class="w-full sm:w-auto bg-darkBg border border-borderCol text-sm rounded-xl px-4 py-2.5 outline-none focus:border-indigo-500 transition cursor-pointer appearance-none pr-10">
-                        <option>🟢 Інтернет-магазин одягу (SalesDrive)</option>
-                        <option>🔵 Автозапчасти США (AmoCRM)</option>
-                        <option>🟣 Б’юті-салон (KeyCRM)</option>
-                    </select>
-                    <div class="absolute right-3 top-3.5 text-xs text-gray-400 pointer-events-none">▼</div>
-                </div>
-
-                <!-- Кнопка адмінки -->
-                <button onclick="toggleModal(true)" class="bg-borderCol hover:bg-gray-800 text-sm font-medium px-4 py-2.5 rounded-xl transition border border-gray-700 flex items-center justify-center gap-1.5 cursor-pointer">
-                    ⚙️ Клієнти та CRM
-                </button>
-
-                <!-- Кнопка синхронізації -->
-                <button onclick="simulateSync()" id="syncBtn" class="bg-indigo-600 hover:bg-indigo-500 text-sm font-medium px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
-                    <span id="syncIcon">🔄</span> Синхронізувати
-                </button>
-            </div>
-        </header>
-
-        <!-- Фільтри періодів -->
-        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center bg-cardBg border border-borderCol px-4 sm:px-6 py-3 rounded-2xl text-sm gap-3">
-            <div class="flex grid grid-cols-3 sm:flex flex-wrap gap-1.5">
-                <button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium shadow-md shadow-indigo-600/20 text-center">Сьогодні</button>
-                <button class="px-3 py-1.5 rounded-lg hover:bg-borderCol text-gray-400 transition text-center">Вчора</button>
-                <button class="px-3 py-1.5 rounded-lg hover:bg-borderCol text-gray-400 transition text-center">Тиждень</button>
-                <button class="px-3 py-1.5 rounded-lg hover:bg-borderCol text-gray-400 transition text-center">Місяць</button>
-                <button class="px-3 py-1.5 rounded-lg hover:bg-borderCol text-gray-400 transition text-center col-span-2 sm:col-span-1">Рік</button>
-            </div>
-            <div class="text-xs text-gray-400 flex items-center justify-center sm:justify-end gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Оновлено: <span id="lastSyncTime">Щойно</span>
-            </div>
-        </div>
-
-        <!-- KPI Картки -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-cardBg border border-borderCol p-4 sm:p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-indigo-500/50 transition">
-                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl group-hover:bg-indigo-500/10 transition"></div>
-                <p class="text-xs text-gray-400 uppercase tracking-wider">Всього лідів</p>
-                <div class="flex items-baseline justify-between mt-2">
-                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">1,284</h3>
-                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">+14.2%</span>
-                </div>
-            </div>
-
-            <div class="bg-cardBg border border-borderCol p-4 sm:p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-indigo-500/50 transition">
-                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition"></div>
-                <p class="text-xs text-gray-400 uppercase tracking-wider">Виручка</p>
-                <div class="flex items-baseline justify-between mt-2">
-                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">$42,350</h3>
-                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">+8.5%</span>
-                </div>
-            </div>
-
-            <div class="bg-cardBg border border-borderCol p-4 sm:p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-indigo-500/50 transition">
-                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition"></div>
-                <p class="text-xs text-gray-400 uppercase tracking-wider">Успішні угоди</p>
-                <div class="flex items-baseline justify-between mt-2">
-                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">342</h3>
-                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">+12.1%</span>
-                </div>
-            </div>
-
-            <div class="bg-cardBg border border-borderCol p-4 sm:p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-indigo-500/50 transition">
-                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition"></div>
-                <p class="text-xs text-gray-400 uppercase tracking-wider">Конверсія (CR)</p>
-                <div class="flex items-baseline justify-between mt-2">
-                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">26.6%</h3>
-                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">+3.1%</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Секція графіків -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Звідки приходять -->
-            <div class="bg-cardBg border border-borderCol p-4 sm:p-6 rounded-2xl shadow-lg lg:col-span-1 flex flex-col justify-between">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-semibold text-sm">🍩 Джерела трафіку</h3>
-                    <span class="text-xs text-gray-400">Звідки ліди</span>
-                </div>
-                <div class="relative h-60 sm:h-64 flex items-center justify-center">
-                    <canvas id="sourcesChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Хто закриває -->
-            <div class="bg-cardBg border border-borderCol p-4 sm:p-6 rounded-2xl shadow-lg lg:col-span-2 flex flex-col justify-between">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-semibold text-sm">📊 Успішні угоди за менеджерами</h3>
-                    <span class="text-xs text-gray-400">Ефективність команди</span>
-                </div>
-                <div class="relative h-60 sm:h-64">
-                    <canvas id="managersChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Таблиця останніх лідів -->
-        <div class="bg-cardBg border border-borderCol p-4 sm:p-6 rounded-2xl shadow-lg">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-semibold text-sm">📋 Останні ліди та замовлення</h3>
-                <span class="text-xs text-indigo-400 cursor-pointer hover:underline">Показати всі →</span>
-            </div>
-            <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-                <table class="w-full text-left text-sm text-gray-300 min-w-[600px]">
-                    <thead class="border-b border-borderCol text-gray-400 text-xs uppercase">
-                        <tr>
-                            <th class="py-3 px-4">ID</th>
-                            <th class="py-3 px-4">Джерело</th>
-                            <th class="py-3 px-4">Менеджер</th>
-                            <th class="py-3 px-4">Статус</th>
-                            <th class="py-3 px-4">Сума</th>
-                            <th class="py-3 px-4">Дата / Час</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-borderCol/50">
-                        <tr class="hover:bg-gray-800/40 transition">
-                            <td class="py-3 px-4 font-medium text-white">#1042</td>
-                            <td class="py-3 px-4 text-indigo-300">google / cpc</td>
-                            <td class="py-3 px-4">Денис</td>
-                            <td class="py-3 px-4"><span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full text-xs font-medium">Успішно закрито</span></td>
-                            <td class="py-3 px-4 font-semibold text-white">$350.00</td>
-                            <td class="py-3 px-4 text-gray-400">Сьогодні, 18:40</td>
-                        </tr>
-                        <tr class="hover:bg-gray-800/40 transition">
-                            <td class="py-3 px-4 font-medium text-white">#1041</td>
-                            <td class="py-3 px-4 text-blue-300">fb / ads</td>
-                            <td class="py-3 px-4">Остап</td>
-                            <td class="py-3 px-4"><span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full text-xs font-medium">В роботі</span></td>
-                            <td class="py-3 px-4 font-semibold text-white">$120.00</td>
-                            <td class="py-3 px-4 text-gray-400">Сьогодні, 17:15</td>
-                        </tr>
-                        <tr class="hover:bg-gray-800/40 transition">
-                            <td class="py-3 px-4 font-medium text-white">#1040</td>
-                            <td class="py-3 px-4 text-pink-300">insta / story</td>
-                            <td class="py-3 px-4">Денис</td>
-                            <td class="py-3 px-4"><span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-full text-xs font-medium">Скасовано</span></td>
-                            <td class="py-3 px-4 font-semibold text-white">$0.00</td>
-                            <td class="py-3 px-4 text-gray-400">Сьогодні, 16:02</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
+<body class="font-sans antialiased">
+<header class="sticky z-30 border-b" style="top:env(safe-area-inset-top,0px);border-color:var(--line);background:rgba(11,12,18,.85);backdrop-filter:blur(16px)">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-3">
+    <div class="flex items-center gap-2.5 mr-2">
+      <div class="w-8 h-8 rounded-lg grid place-items-center" style="background:linear-gradient(135deg,#7c8cff,#3fd6a5)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0b0c12" stroke-width="2.6" stroke-linecap="round"><path d="M4 19V10M10 19V5M16 19v-6M22 19H2"/></svg></div>
+      <span class="font-semibold tracking-tight">AdStat</span>
+      <span class="badge b-prog">демо</span>
     </div>
+    <select id="companySelect" class="field" style="width:220px" aria-label="Активный клиент"></select>
+    <div class="flex-1"></div>
+    <button id="manageBtn" class="btn">Управление клиентами / CRM</button>
+    <button id="syncBtn" class="btn btn-primary"><span id="syncLbl">Синхронизировать</span></button>
+  </div>
+</header>
 
-    <!-- Модальне вікно керування клієнтами (No-Code Admin Modal) -->
-    <div id="clientsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-cardBg border border-borderCol w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <!-- Шапка модалки -->
-            <div class="flex justify-between items-center px-4 sm:px-6 py-4 border-b border-borderCol">
-                <h3 class="font-bold text-base flex items-center gap-2">⚙️ Керування клієнтами та CRM</h3>
-                <button onclick="toggleModal(false)" class="text-gray-400 hover:text-white text-lg font-bold w-8 h-8 rounded-lg flex items-center justify-center hover:bg-borderCol transition cursor-pointer">✕</button>
-            </div>
-            
-            <!-- Тіло модалки -->
-            <div class="p-4 sm:p-6 space-y-6 overflow-y-auto">
-                <!-- Форма додавання нового клієнта -->
-                <div class="bg-darkBg p-4 rounded-xl border border-borderCol space-y-4">
-                    <h4 class="text-sm font-semibold text-indigo-400">➕ Підключити нового клієнта</h4>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Назва клієнта / бренду</label>
-                        <input type="text" placeholder="Наприклад: Інтернет-магазин косметики" class="w-full bg-cardBg border border-borderCol rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 text-white">
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Тип CRM / Джерела</label>
-                            <select class="w-full bg-cardBg border border-borderCol rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 text-white">
-                                <option value="salesdrive">SalesDrive</option>
-                                <option value="amocrm">AmoCRM</option>
-                                <option value="keycrm">KeyCRM</option>
-                                <option value="googlesheets">Google Таблиця</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">API Ключ / Токен</label>
-                            <input type="password" placeholder="••••••••••••••••" class="w-full bg-cardBg border border-borderCol rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 text-white">
-                        </div>
-                    </div>
-                    <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-sm font-medium py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20 cursor-pointer">Зберегти та підключити</button>
-                </div>
-
-                <!-- Список існуючих клієнтів -->
-                <div>
-                    <h4 class="text-sm font-semibold mb-3 text-gray-300">Активні клієнти</h4>
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center bg-darkBg px-4 py-3 rounded-xl border border-borderCol">
-                            <div>
-                                <p class="text-sm font-medium text-white">Інтернет-магазин одягу</p>
-                                <p class="text-xs text-gray-400">CRM: <span class="text-indigo-400">SalesDrive</span></p>
-                            </div>
-                            <button class="text-rose-400 hover:text-rose-300 text-xs font-semibold px-3 py-1.5 bg-rose-500/10 rounded-lg transition cursor-pointer">Видалити</button>
-                        </div>
-                        <div class="flex justify-between items-center bg-darkBg px-4 py-3 rounded-xl border border-borderCol">
-                            <div>
-                                <p class="text-sm font-medium text-white">Автозапчасти США</p>
-                                <p class="text-xs text-gray-400">CRM: <span class="text-blue-400">AmoCRM</span></p>
-                            </div>
-                            <button class="text-rose-400 hover:text-rose-300 text-xs font-semibold px-3 py-1.5 bg-rose-500/10 rounded-lg transition cursor-pointer">Видалити</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+  <div class="glass px-4 py-3 text-sm muted">Все цифры в этом демо вымышленные. Клиентов можно добавлять и удалять, период и клиента переключать, «Синхронизировать» подгружает новые тестовые заявки.</div>
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div><h1 id="title" class="text-2xl font-semibold tracking-tight"></h1><p id="subtitle" class="muted text-sm mt-1"></p></div>
+    <div class="seg" id="periods" role="group" aria-label="Период">
+      <button data-p="today" aria-pressed="false">Сегодня</button><button data-p="week" aria-pressed="false">Неделя</button>
+      <button data-p="month" aria-pressed="true">Месяц</button><button data-p="all" aria-pressed="false">Все время</button>
     </div>
+  </div>
+  <div id="empty" class="glass p-10 text-center hidden"><h2 class="text-lg font-semibold">Добавьте первого клиента</h2><p class="muted text-sm mt-1 mb-5">Здесь появятся лиды, источники и менеджеры.</p><button class="btn btn-primary" id="emptyAdd">Добавить клиента</button></div>
+  <div id="dash" class="space-y-6">
+    <section id="kpis" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></section>
+    <section class="grid lg:grid-cols-5 gap-4">
+      <div class="glass p-5 lg:col-span-2"><h3 class="font-semibold">Откуда приходят люди</h3><p class="muted text-sm mb-4">Лиды по источникам трафика</p><div class="relative h-72"><canvas id="srcChart"></canvas></div></div>
+      <div class="glass p-5 lg:col-span-3">
+        <div class="flex items-start justify-between gap-3 mb-4"><div><h3 class="font-semibold">Кто чаще закрывается</h3><p class="muted text-sm">Успешные сделки</p></div>
+          <div class="seg" id="barMode" role="group" aria-label="Разрез"><button data-m="managers" aria-pressed="true">Менеджеры</button><button data-m="sources" aria-pressed="false">Источники</button></div></div>
+        <div class="relative h-72"><canvas id="barChart"></canvas></div>
+      </div>
+    </section>
+    <section class="glass overflow-hidden"><div class="px-5 pt-5 pb-3"><h3 class="font-semibold">Последние лиды</h3></div>
+      <div class="overflow-x-auto"><table><thead><tr><th>Дата</th><th>Заказ</th><th>Источник</th><th>Кампания</th><th>Менеджер</th><th>Статус</th><th style="text-align:right">Сумма</th></tr></thead><tbody id="leadsBody"></tbody></table></div></section>
+  </div>
+</main>
 
-    <!-- Скрипти графіків та анімацій -->
-    <script>
-        // Керування модальним вікном
-        function toggleModal(show) {
-            const modal = document.getElementById('clientsModal');
-            if (show) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            } else {
-                modal.classList.remove('flex');
-                modal.classList.add('hidden');
-            }
-        }
+<dialog id="modal" class="w-full"><div class="glass mx-auto my-8 w-[min(640px,calc(100vw-24px))] p-6" style="background:rgba(20,21,30,.95)">
+  <div class="flex items-center justify-between mb-5"><h2 class="text-lg font-semibold">Клиенты и CRM</h2><button class="btn" style="height:32px" id="closeBtn">Закрыть</button></div>
+  <div id="companyList" class="space-y-2 mb-6"></div>
+  <div class="space-y-3 pt-5 border-t" style="border-color:var(--line)"><h3 class="font-semibold text-sm">Новый клиент</h3>
+    <input id="fName" class="field" placeholder="Название компании">
+    <select id="fType" class="field" aria-label="CRM"><option value="SalesDrive">SalesDrive</option><option value="KeyCRM">KeyCRM</option><option value="AmoCRM">AmoCRM</option></select>
+    <input id="fKey" class="field" placeholder="API-ключ (в демо можно любой)">
+    <p id="formErr" class="text-sm hidden" style="color:var(--neg)"></p>
+    <button class="btn btn-primary" id="addBtn">Добавить клиента</button></div>
+</div></dialog>
+<div id="toast" class="glass px-4 py-2.5 text-sm opacity-0 pointer-events-none"></div>
 
-        // Імітація синхронізації
-        function simulateSync() {
-            const btn = document.getElementById('syncBtn');
-            const icon = document.getElementById('syncIcon');
-            const timeSpan = document.getElementById('lastSyncTime');
-            
-            icon.style.display = 'inline-block';
-            icon.style.transition = 'transform 1s';
-            icon.style.transform = 'rotate(360deg)';
-            btn.style.opacity = '0.7';
-            
-            setTimeout(() => {
-                icon.style.transform = 'rotate(0deg)';
-                btn.style.opacity = '1';
-                timeSpan.innerText = 'Щойно';
-            }, 1000);
-        }
+<script>
+const $=s=>document.querySelector(s), modal=$('#modal');
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n||0)+' ₴', num=n=>new Intl.NumberFormat('ru-RU').format(n||0);
+const WON='успешно закрыт',LOST='отменен',PROG='в работе',NEW='новый', DAY=864e5, PALETTE=['#7c8cff','#3fd6a5','#f5b95f','#ff7a90','#5ec8f2','#b388ff'];
+const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
 
-        // Графік джерел (Doughnut)
-        const ctx1 = document.getElementById('sourcesChart').getContext('2d');
-        new Chart(ctx1, {
-            type: 'doughnut',
-            data: {
-                labels: ['Google CPC', 'Facebook Ads', 'Instagram', 'Direct'],
-                datasets: [{
-                    data: [45, 30, 15, 10],
-                    backgroundColor: ['#6366f1', '#3b82f6', '#ec4899', '#64748b'],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    legend: { position: 'bottom', labels: { color: '#9ca3af', boxWidth: 12, font: { size: 11 } } } 
-                }
-            }
-        });
+/* ---------- вымышленные профили клиентов: источник [доля, шанс закрытия] ---------- */
+const PROFILES=[
+ {name:'Smile Dental',crm:'SalesDrive',seed:11,avg:3400,perDay:6,growth:.5,mgr:['Олена К.','Ірина М.','Богдан П.'],
+  src:[['facebook',.32,.17],['instagram',.27,.14],['google',.23,.33],['tiktok',.11,.06],['organic',.07,.30]],camp:['Імплантація_лід','Відбілювання_акція','Консультація_0грн','Ретаргет_30д']},
+ {name:'Nova Fit',crm:'KeyCRM',seed:23,avg:1800,perDay:9,growth:.2,mgr:['Максим Т.','Дарина Л.'],
+  src:[['instagram',.41,.22],['tiktok',.26,.12],['facebook',.18,.19],['google',.10,.31],['telegram',.05,.25]],camp:['Абонемент_літо','Пробне_заняття','Челендж_30днів','Look-alike_клієнти']},
+ {name:'Lux Interiors',crm:'AmoCRM',seed:37,avg:42000,perDay:2.2,growth:-.15,mgr:['Андрій В.','Софія Р.','Тарас Н.'],
+  src:[['google',.38,.14],['facebook',.24,.08],['instagram',.2,.07],['pinterest',.1,.05],['organic',.08,.18]],camp:['Дизайн_під_ключ','Ремонт_квартир','Кейси_відео','Пошук_бренд']}];
 
-        // Графік менеджерів (Bar)
-        const ctx2 = document.getElementById('managersChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: ['Денис', 'Остап', 'Іван', 'Марина'],
-                datasets: [{
-                    label: 'Закриті угоди',
-                    data: [142, 108, 68, 24],
-                    backgroundColor: '#6366f1',
-                    borderRadius: 8,
-                    hoverBackgroundColor: '#818cf8'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { ticks: { color: '#9ca3af', font: { size: 11 } }, grid: { display: false } },
-                    y: { ticks: { color: '#9ca3af', font: { size: 11 } }, grid: { color: '#1f2937' } }
-                }
-            }
-        });
-    </script>
+function genLeads(p,startId){
+  const r=rng(p.seed), out=[], now=Date.now(); let id=startId;
+  for(let d=119;d>=0;d--){
+    const day=new Date(now-d*DAY), wk=[0,6].includes(day.getDay())?.7:1;
+    const trend=1+p.growth*(119-d)/119;
+    const n=Math.max(0,Math.round(p.perDay*wk*trend*(.7+r()*.6)));
+    for(let i=0;i<n;i++){
+      let x=r(),s=p.src[0];for(const e of p.src){if(x<e[1]){s=e;break}x-=e[1]}
+      const mi=Math.min(p.mgr.length-1,Math.floor(r()*r()*p.mgr.length*1.4)), mf=1.25-mi*.25;
+      const t=new Date(day);t.setHours(9+Math.floor(r()*12),Math.floor(r()*60));if(t>now)t.setTime(now-r()*36e5);
+      const age=(now-t)/DAY,k=r(); let st;
+      if(age<1.5)st=k<.6?NEW:PROG; else if(k<s[2]*mf)st=WON; else if(k<s[2]*mf+.3)st=LOST; else st=age<10?PROG:LOST;
+      out.push({order_id:String(++id),source:s[0],campaign:p.camp[Math.floor(r()*p.camp.length)],manager:p.mgr[mi],status:st,
+        amount:st===WON?Math.round(p.avg*(.5+r()*1.1)/10)*10:0,created_at:t});
+    }
+  }
+  return out;
+}
+
+/* ---------- состояние ---------- */
+const state={db:PROFILES.map((p,i)=>({id:i+1,name:p.name,crm:p.crm,profile:p,leads:genLeads(p,1000*(i+1))})),companyId:1,period:'month',mode:'managers',charts:{},nextId:4};
+const cur=()=>state.db.find(c=>c.id===state.companyId);
+let toastT;function toast(m,bad){const t=$('#toast');t.textContent=m;t.style.color=bad?'var(--neg)':'var(--text)';t.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity=0,3000)}
+
+/* ---------- аналитика (та же логика, что на бэкенде) ---------- */
+function range(p){const now=Date.now(),L={today:1,week:7,month:30}[p];if(!L)return null;const sod=new Date();sod.setHours(0,0,0,0);const from=p==='today'?+sod:now-L*DAY;return{from,to:now+1000,pf:from-L*DAY,pt:from}}
+const inR=(l,a,b)=>(a==null||l.created_at>=a)&&(b==null||l.created_at<b);
+function kpi(ls){const won=ls.filter(l=>l.status===WON);return{leads:ls.length,won:won.length,revenue:won.reduce((s,l)=>s+l.amount,0),cr:ls.length?+(won.length/ls.length*100).toFixed(1):0}}
+function group(ls,key,empty){const m=new Map();ls.forEach(l=>{const k=l[key]||empty,g=m.get(k)||{label:k,leads:0,won:0};g.leads++;if(l.status===WON)g.won++;m.set(k,g)});return[...m.values()].map(g=>({...g,cr:+(g.won/g.leads*100).toFixed(1)}))}
+function analytics(){const all=cur().leads,r=range(state.period);
+  const ls=r?all.filter(l=>inR(l,r.from,r.to)):all, prev=r?kpi(all.filter(l=>inR(l,r.pf,r.pt))):null;
+  return{kpi:kpi(ls),prev,sources:group(ls,'source','не указан').sort((a,b)=>b.leads-a.leads),managers:group(ls,'manager','не назначен').sort((a,b)=>b.won-a.won),recent:[...ls].sort((a,b)=>b.created_at-a.created_at).slice(0,20)}}
+
+function delta(c,p,pp){if(p==null)return'';const d=pp?+(c-p).toFixed(1):(p===0?(c>0?100:0):Math.round((c-p)/p*100));const cl=d>0?'up':d<0?'down':'flat';return`<span class="delta ${cl}">${d>0?'↑':d<0?'↓':''} ${Math.abs(d)}${pp?' п.п.':'%'}</span>`}
+
+function render(){
+  const empty=!state.db.length;$('#empty').classList.toggle('hidden',!empty);$('#dash').classList.toggle('hidden',empty);
+  $('#companySelect').innerHTML=state.db.map(c=>`<option value="${c.id}" ${c.id===state.companyId?'selected':''}>${esc(c.name)}</option>`).join('')||'<option>Нет клиентов</option>';
+  $('#syncBtn').disabled=empty;renderList();
+  if(empty){$('#title').textContent='Аналитика';$('#subtitle').textContent='';return}
+  const c=cur(),a=analytics(),{kpi:k,prev:p}=a;$('#title').textContent=c.name;$('#subtitle').textContent=c.crm;
+  const cards=[['Всего лидов',num(k.leads),delta(k.leads,p?.leads)],['Выручка',money(k.revenue),delta(k.revenue,p?.revenue)],['Успешные сделки',num(k.won),delta(k.won,p?.won)],['Конверсия',k.cr+'%',p?delta(k.cr,p.cr,1):'']];
+  $('#kpis').innerHTML=cards.map(([l,v,d])=>`<div class="glass p-5"><div class="muted text-sm">${l}</div><div class="text-3xl font-semibold tracking-tight mt-2">${v}</div><div class="mt-3 h-6 flex items-center gap-2">${d}${d?'<span class="muted text-xs">к прошлому периоду</span>':''}</div></div>`).join('');
+  Chart.defaults.color='#8b8fa0';Chart.defaults.font.family='Onest,system-ui,sans-serif';
+  mount('srcChart',{type:'doughnut',data:{labels:a.sources.map(x=>x.label),datasets:[{data:a.sources.map(x=>x.leads),backgroundColor:a.sources.map((_,i)=>PALETTE[i%6]),borderColor:'#14151d',borderWidth:3,hoverOffset:6}]},
+    options:{maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:14}},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw} (${(c.raw/c.dataset.data.reduce((x,y)=>x+y,0)*100).toFixed(0)}%)`}}}}});
+  const rows=a[state.mode].filter(x=>x.won>0).slice(0,10);
+  mount('barChart',{type:'bar',data:{labels:rows.map(x=>x.label),datasets:[{label:'Успешные сделки',data:rows.map(x=>x.won),backgroundColor:'#7c8cff',hoverBackgroundColor:'#95a2ff',borderRadius:8,maxBarThickness:44}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{afterLabel:c=>`Лидов: ${rows[c.dataIndex].leads} · конверсия ${rows[c.dataIndex].cr}%`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(255,255,255,.06)'},border:{display:false}}}}});
+  const cls={[WON]:'b-won',[LOST]:'b-lost',[PROG]:'b-prog',[NEW]:'b-new'};
+  $('#leadsBody').innerHTML=a.recent.length?a.recent.map(r=>`<tr><td class="muted">${r.created_at.toLocaleString('ru-RU',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td><td>#${esc(r.order_id)}</td><td>${esc(r.source)}</td><td>${esc(r.campaign)}</td><td>${esc(r.manager)}</td><td><span class="badge ${cls[r.status]}">${esc(r.status)}</span></td><td style="text-align:right">${r.amount?money(r.amount):'<span class="muted">—</span>'}</td></tr>`).join(''):'<tr><td colspan="7" class="muted" style="text-align:center;padding:32px">За этот период лидов нет</td></tr>';
+}
+function mount(id,cfg){state.charts[id]?.destroy();state.charts[id]=new Chart($('#'+id),cfg)}
+
+/* ---------- действия ---------- */
+function bindSeg(sel,key){$(sel).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$(sel).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));state[key]=b.dataset.p||b.dataset.m;render()})}
+bindSeg('#periods','period');bindSeg('#barMode','mode');
+$('#companySelect').onchange=e=>{state.companyId=+e.target.value;render()};
+$('#syncBtn').onclick=()=>{const b=$('#syncBtn'),l=$('#syncLbl');b.disabled=true;l.innerHTML='<span class="spin"></span> Синхронизация';
+  setTimeout(()=>{const c=cur(),p=c.profile,r=rng(Date.now()),n=3+Math.floor(r()*4),last=Math.max(...c.leads.map(x=>+x.order_id));
+    for(let i=0;i<n;i++){const s=p.src[Math.floor(r()*p.src.length)];c.leads.push({order_id:String(last+i+1),source:s[0],campaign:p.camp[Math.floor(r()*p.camp.length)],manager:p.mgr[Math.floor(r()*p.mgr.length)],status:NEW,amount:0,created_at:new Date()})}
+    b.disabled=false;l.textContent='Синхронизировать';toast(`Загружено новых лидов: ${n}`);render()},1100)};
+const openM=()=>{$('#formErr').classList.add('hidden');modal.showModal()};
+$('#manageBtn').onclick=openM;$('#emptyAdd').onclick=openM;$('#closeBtn').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});
+function renderList(){$('#companyList').innerHTML=state.db.length?state.db.map(c=>`<div class="flex items-center justify-between gap-3 p-3 rounded-xl" style="background:rgba(255,255,255,.04);border:1px solid var(--line)"><div><div class="font-medium text-sm">${esc(c.name)}</div><div class="muted text-xs mt-0.5">${esc(c.crm)} · ${num(c.leads.length)} лидов</div></div><button class="btn" style="height:30px;color:var(--neg)" data-del="${c.id}">Удалить</button></div>`).join(''):'<p class="muted text-sm">Пока нет ни одного клиента.</p>'}
+$('#companyList').addEventListener('click',e=>{const id=+e.target.dataset.del;if(!id)return;state.db=state.db.filter(c=>c.id!==id);if(state.companyId===id)state.companyId=state.db[0]?.id||null;toast('Клиент удалён');render()});
+$('#addBtn').onclick=()=>{const name=$('#fName').value.trim();if(!name){const e=$('#formErr');e.textContent='Укажите название компании';e.classList.remove('hidden');return}
+  const p={...PROFILES[state.nextId%3],name,crm:$('#fType').value,seed:state.nextId*17+5}, c={id:state.nextId++,name,crm:p.crm,profile:p,leads:genLeads(p,5000+state.nextId*1000)};
+  state.db.push(c);state.companyId=c.id;$('#fName').value='';$('#fKey').value='';toast('Клиент добавлен, тестовые лиды загружены');render()};
+render();
+</script>
 </body>
 </html>
